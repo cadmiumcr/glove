@@ -1,0 +1,19 @@
+name: cadmium_glove
+version: 0.1.0
+
+authors:
+  - Chris Watson <chris@watzon.me>
+
+dependencies:
+  cadmium:
+    github: watzon/cadmium
+    branch: master
+  apatite:
+    github: watzon/apatite
+    branch: master
+  parallel_worker:
+    github: aligo/parallel_worker
+
+crystal: 0.29.0
+
+license: MIT
