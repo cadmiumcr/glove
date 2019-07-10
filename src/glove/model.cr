@@ -153,8 +153,8 @@ module Cadmium::Glove
     # Create initial values for @word_vec and @word_biases
     private def build_word_vectors
       cols = @token_index.size
-      @word_vec = Apatite::Matrix.build(cols, @num_components) { rand(0.0..1.0) }
-      @word_biases = Array(Float64).new(cols, 0.0)
+      @word_vec = Apatite::Matrix.build(cols, @num_components) { rand(10.0) }
+      @word_biases = Array(Float64).new(cols, nil)
     end
 
     # Builds the co-occurrence matrix
