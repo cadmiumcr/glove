@@ -3,10 +3,10 @@ require "./workers"
 module Cadmium::Glove
   class Model
 
-    CORPUS_FILE = "corpus.json",
-    COOC_MATRIX_FILE = "cooc_matrix.json",
-    VEC_FILE = "word_vectors.json",
-    BIASFILE = "word_biases.json"
+    CORPUS_FILE = "corpus.json"
+    COOC_FILE = "cooc_matrix.json"
+    VEC_FILE = "word_vectors.json"
+    BIAS_FILE = "word_biases.json"
 
     property epochs : Int32
 
@@ -34,12 +34,11 @@ module Cadmium::Glove
 
     # Creates a new `Glove::Model` instance.
     def initialize(
-      @max_count = 100,
-      @learning_rate = 0.05,
-      @alpha = 0.75,
-      @num_components = 30,
-      @epochs = 5,
-      @threads = 4
+      @num_components = 50,           # Word vector size
+      @epochs = 25,                   # Number of full passes through cooccurrence matrix
+      @threads = 4,                   # Number of threads to train on
+      @learning_rate = 0.05,          # Initial learning rate
+      @alpha = 0.75, @max_count = 100 # Weighing function parameters
     )
       @token_index = {} of String => Int32
       @token_pairs = [] of TokenPair
@@ -87,6 +86,8 @@ module Cadmium::Glove
       word_vec_dump = word_vec.to_json
       word_bias_dump = word_biases.to_json
 
+      Dir.mkdir_p(outdir)
+
       File.write(File.join(outdir, corpus_file), corpus_dump)
       File.write(File.join(outdir, cooc_file), cooc_dump)
       File.write(File.join(outdir, vec_file), word_vec_dump)
@@ -101,22 +102,34 @@ module Cadmium::Glove
       vec_file = VEC_FILE,
       bias_file = BIAS_FILE
     )
-      corpus_data = File.read(File.join(outdir, corpus_file))
+      corpus_data = File.read(File.join(dir, corpus_file))
       @corpus = Corpus.from_json(corpus_data)
 
       @token_index = corpus.index
       @token_pairs = corpus.pairs
 
-      cooc_matrix_data = File.read(File.join(outdir, cooc_file))
+      cooc_matrix_data = File.read(File.join(dir, cooc_file))
       @cooc_matrix = Apatite::Matrix.from_json(cooc_matrix_data)
 
-      word_vec_data = File.read(File.join(outdir, vec_file))
+      word_vec_data = File.read(File.join(dir, vec_file))
       @word_vec    = Apatite::Matrix.from_json(word_vec_data)
 
-      word_bias_data = File.read(File.join(outdir, bias_file))
+      word_bias_data = File.read(File.join(dir, bias_file))
       @word_biases = Array(Float64).from_json(word_bias_data)
 
       self
+    end
+
+    # Create a new model from an existing dataset.
+    def self.load(
+      dir,
+      corpus_file = CORPUS_FILE,
+      cooc_file = COOC_FILE,
+      vec_file = VEC_FILE,
+      bias_file = BIAS_FILE,
+      **options
+    )
+      Model.new(**options).load(dir, corpus_file, cooc_file, vec_file, bias_file)
     end
 
     # TODO: Generate a graph of the word vector matrix
@@ -171,7 +184,7 @@ module Cadmium::Glove
     private def build_word_vectors
       cols = @token_index.size
       @word_vec = Apatite::Matrix.build(cols, @num_components) { rand(10.0) }
-      @word_biases = Array(Float64).new(cols, nil)
+      @word_biases = Array(Float64).new(cols, 0)
     end
 
     # Builds the co-occurrence matrix
