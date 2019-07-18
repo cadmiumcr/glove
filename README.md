@@ -82,6 +82,10 @@ puts model.analogy_words("atom", "quantum", "physics")
 # => [["electron", 0.9858380292886947], ["energie", 0.9815122410243475], ["photon", 0.9665073849076669]]
 ```
 
+## Performance
+
+TODO: Benchmarks
+
 ## Contributing
 
 1. Fork it (<https://github.com/watzon/cadmium_glove/fork>)
