@@ -2,6 +2,8 @@
 
 Pure Crystal implementation of Global Vectors for Word Representations.
 
+> Note that this does not work quite right yet. Something is off with the math and it's returning incorrect results.
+
 # Overview
 
 GloVe is an unsupervised learning algorithm for obtaining vector representations for words. Training is performed on aggregated global word-word co-occurrence statistics from a corpus, and the resulting representations showcase interesting linear substructures of the word vector space.
@@ -25,6 +27,8 @@ GloVe is an unsupervised learning algorithm for obtaining vector representations
 
    ```yaml
    dependencies:
+     cadmium:
+       github: watzon/cadmium
      cadmium_glove:
        github: watzon/cadmium_glove
    ```
@@ -34,14 +38,49 @@ GloVe is an unsupervised learning algorithm for obtaining vector representations
 ## Usage
 
 ```crystal
+require "cadmium"
 require "cadmium_glove"
+
+include Cadmium
+
+# Create a new model. Values used here are the defaults.
+model = Glove::Model.new(
+  max_count: 100,
+  learning_rate: 0.05,
+  alpha: 0.75,
+  num_components: 30,
+  epochs: 5
+)
+
+# Feed the model some text
+text = File.read("quantum-physics.txt")
+model.fit(text)
+
+# Alternatively you can pass the model a Corpus object
+corpus = Glove::Corpus.build(text)
+model.fit(corpus)
+
+# Train the model
+model.train
+
+# Save the model as JSON
+model.save("./data")
 ```
 
-TODO: Write usage instructions here
+To import and use a model:
 
-## Development
+```crystal
+# Load the previously saved model from the data directory
+model = Glove::Model.load("./data")
 
-TODO: Write development instructions here
+# Get the most similar words
+puts model.most_similar("quantum")
+# => [["physics", 0.9974459436353388], ["mechanics", 0.9971606266531394], ["theory", 0.9965966776283189]]
+
+# Find words that are releated to atom like quantum is related to physics
+puts model.analogy_words("atom", "quantum", "physics")
+# => [["electron", 0.9858380292886947], ["energie", 0.9815122410243475], ["photon", 0.9665073849076669]]
+```
 
 ## Contributing
 

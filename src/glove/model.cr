@@ -3,6 +3,11 @@ require "./workers"
 module Cadmium::Glove
   class Model
 
+    CORPUS_FILE = "corpus.json",
+    COOC_MATRIX_FILE = "cooc_matrix.json",
+    VEC_FILE = "word_vectors.json",
+    BIASFILE = "word_biases.json"
+
     property epochs : Int32
 
     property num_components : Int32
@@ -70,33 +75,45 @@ module Cadmium::Glove
     end
 
     # Save trained data to files
-    def save(corpus_file, cooc_file, vec_file, bias_file)
+    def save(
+      outdir,
+      corpus_file = CORPUS_FILE,
+      cooc_file = COOC_FILE,
+      vec_file = VEC_FILE,
+      bias_file = BIAS_FILE
+    )
       corpus_dump = corpus.to_json
       cooc_dump = cooc_matrix.to_json
       word_vec_dump = word_vec.to_json
       word_bias_dump = word_biases.to_json
 
-      File.write(corpus_file, corpus_dump)
-      File.write(cooc_file, cooc_dump)
-      File.write(vec_file, word_vec_dump)
-      File.write(bias_file, word_bias_dump)
+      File.write(File.join(outdir, corpus_file), corpus_dump)
+      File.write(File.join(outdir, cooc_file), cooc_dump)
+      File.write(File.join(outdir, vec_file), word_vec_dump)
+      File.write(File.join(outdir, bias_file), word_bias_dump)
     end
 
     # Loads training data from already existing files.
-    def load(corpus_file, cooc_file, vec_file, bias_file)
-      corpus_data = File.read(corpus_file)
+    def load(
+      dir,
+      corpus_file = CORPUS_FILE,
+      cooc_file = COOC_FILE,
+      vec_file = VEC_FILE,
+      bias_file = BIAS_FILE
+    )
+      corpus_data = File.read(File.join(outdir, corpus_file))
       @corpus = Corpus.from_json(corpus_data)
 
       @token_index = corpus.index
       @token_pairs = corpus.pairs
 
-      cooc_matrix_data = File.read(cooc_file)
+      cooc_matrix_data = File.read(File.join(outdir, cooc_file))
       @cooc_matrix = Apatite::Matrix.from_json(cooc_matrix_data)
 
-      word_vec_data = File.read(vec_file)
+      word_vec_data = File.read(File.join(outdir, vec_file))
       @word_vec    = Apatite::Matrix.from_json(word_vec_data)
 
-      word_bias_data = File.read(bias_file)
+      word_bias_data = File.read(File.join(outdir, bias_file))
       @word_biases = Array(Float64).from_json(word_bias_data)
 
       self
