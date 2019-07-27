@@ -43,7 +43,7 @@ module Cadmium::Glove
         hash[item] ||= 0
         hash[item] += 1
         hash
-      end.reject { |word, count| count <= min_count }
+      end.to_h.select { |word, count| count >= min_count }
     end
 
     # A hash whose values hold a sequential index of a word as it
@@ -68,9 +68,9 @@ module Cadmium::Glove
 
     # Construct an array of neighbors to the given word and its index in
     # the `#tokens` array.
-    def token_neighbors(word, idx)
-      start_pos = idx - @window < 0 ? 0 : idx - @window
-      end_pos   = (idx + @window >= tokens.size) ? tokens.size - 1 : idx - @window
+    def token_neighbors(word, index)
+      start_pos = index - window < 0 ? 0 : index - window
+      end_pos   = (index + window >= tokens.size) ? tokens.size - 1 : index + window
 
       tokens[start_pos..end_pos].map do |neighbor|
         neighbor unless word == neighbor

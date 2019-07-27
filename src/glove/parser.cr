@@ -33,9 +33,9 @@ module Cadmium::Glove
 
     def tokenize
       downcase
-      stop_words if @stop_words
       alphabetic if @alphabetic
       split
+      stop_words if @stop_words
       normalize if @normalize
       stem if @stem
       tokens
@@ -46,7 +46,7 @@ module Cadmium::Glove
     end
 
     def split
-      @tokens = @tokens.concat(@text.split)
+      @tokens = @text.split
     end
 
     def alphabetic
@@ -54,7 +54,7 @@ module Cadmium::Glove
     end
 
     def stem
-      @tokens = @tokens.map(&.stem)
+      @tokens.map!(&.stem)
     end
 
     def normalize
@@ -64,7 +64,9 @@ module Cadmium::Glove
     end
 
     def stop_words
-      @tokens = @tokens.reject { |t| @@stop_words.includes?(t) }
+      @tokens.reject! do |word|
+        @@stop_words.includes?(word)
+      end
     end
   end
 end

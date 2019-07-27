@@ -26,7 +26,7 @@ module Cadmium::Glove
             build_cooc_matrix_col(slice)
           end
 
-          Apatite::Matrix.columns(results)
+          Apatite::Matrix.rows(results)
         end
 
         # Creates a vector column for the cooc_matrix based on given token.
@@ -38,11 +38,11 @@ module Cadmium::Glove
 
           token_pairs.each do |pair|
             key = token_index[pair.token]
-            sum = pair.neighbors.select { |word| word == token }.size
+            sum = pair.neighbors.select{ |word| word == token }.size
             vector[key] += sum
           end
 
-          vector.to_a
+          vector
         end
       end
     end

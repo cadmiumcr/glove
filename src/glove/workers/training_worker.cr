@@ -16,19 +16,14 @@ module Cadmium::Glove
 
       # Creates a new `TrainingWorker` instance
       def initialize(calling_class : Model, indices)
-        @caller, @indices = calling_class, indices
+        @caller = calling_class
+        @indices = indices
         @word_vec = @caller.word_vec.dup
         @word_biases = @caller.word_biases.dup
       end
 
       def run
-        slice_size = indices.size / threads
-
-        workers = indices.each_slice(slice_size).map do |slice|
-          [work(slice)]
-        end
-
-        workers.each(&.join)
+        work(indices)
 
         {@word_vec, @word_biases}
       end
@@ -64,11 +59,14 @@ module Cadmium::Glove
       end
 
       def apply_weights(w1, w2, loss, word_a_norm, word_b_norm)
-        word_vec.column_vectors.map(&.to_a).each do |col|
+        col_vecs = word_vec.column_vectors.map do |col|
+          col = col.to_a
           col[w1] = (col[w1] - learning_rate * loss * col[w2]) / word_a_norm
           col[w2] = (col[w2] - learning_rate * loss * col[w2]) / word_b_norm
           col
         end
+
+        word_vec = Apatite::Matrix.columns(col_vecs)
 
         word_biases[w1] -= learning_rate * loss
         word_biases[w2] -= learning_rate * loss

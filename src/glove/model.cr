@@ -59,11 +59,13 @@ module Cadmium::Glove
     def train
       start_time = Time.now
       puts "Started training at " + start_time.to_s("%X")
+
       train_in_epochs(matrix_nnz)
+
       finish_time = Time.now
       puts "Finished training at " + finish_time.to_s("%X")
       span = finish_time - start_time
-      puts "Time elapsed #{span.total_minutes.to_i} minutes and #{span.seconds} seconds"
+      puts "Time elapsed #{span.hours}:#{span.minutes}:#{span.seconds}"
       self
     end
 
@@ -183,7 +185,7 @@ module Cadmium::Glove
     # Create initial values for @word_vec and @word_biases
     private def build_word_vectors
       cols = @token_index.size
-      @word_vec = Apatite::Matrix.build(cols, @num_components) { rand(10.0) }
+      @word_vec = Apatite::Matrix.build(cols, @num_components) { rand(0.0...1.0) }
       @word_biases = Array(Float64).new(cols, 0)
     end
 
@@ -213,12 +215,12 @@ module Cadmium::Glove
 
     # Calculates the cosine distance of all the words in the vocabulary
     # against a given word. Results are then sorted in DESC order.
-    private def vector_distance(word)
+    def vector_distance(word)
       return [] of Tuple(String, Float64) unless word_vector = vector(word)
 
       token_index.map_with_index do |(token, count), idx|
-        next if token == word # NOTE: Might not be right
-        {token, Apatite.cosine(word_vector, word_vec.row(idx))}
+        next if token == word
+        {token, cosine(word_vector, word_vec.row(idx))}
       end.compact.sort { |a, b| b[1] <=> a[1] }
     end
 
