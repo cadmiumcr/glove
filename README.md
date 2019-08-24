@@ -28,9 +28,9 @@ GloVe is an unsupervised learning algorithm for obtaining vector representations
    ```yaml
    dependencies:
      cadmium:
-       github: watzon/cadmium
+       github: cadmiumcr/cadmium
      cadmium_glove:
-       github: watzon/cadmium_glove
+       github: cadmium_cr/cadmium_glove
    ```
 
 2. Run `shards install`
@@ -88,7 +88,7 @@ TODO: Benchmarks
 
 ## Contributing
 
-1. Fork it (<https://github.com/watzon/cadmium_glove/fork>)
+1. Fork it (<https://github.com/cadmiumcr/cadmium_glove/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
