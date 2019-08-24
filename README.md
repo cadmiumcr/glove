@@ -27,8 +27,6 @@ GloVe is an unsupervised learning algorithm for obtaining vector representations
 
    ```yaml
    dependencies:
-     cadmium:
-       github: cadmiumcr/cadmium
      cadmium_glove:
        github: cadmium_cr/glove
    ```
