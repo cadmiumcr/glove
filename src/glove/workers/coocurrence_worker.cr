@@ -1,5 +1,4 @@
 require "apatite"
-require "parallel_worker"
 
 module Cadmium::Glove
     module Workers
@@ -22,11 +21,11 @@ module Cadmium::Glove
 
         # Perform the building of the `Matrix`.
         def run
-          results = token_index.to_a.map do |slice|
+          cols = token_index.to_a.map do |slice|
             build_cooc_matrix_col(slice)
           end
 
-          Apatite::Matrix.rows(results)
+          Apatite::Matrix.columns(cols)
         end
 
         # Creates a vector column for the cooc_matrix based on given token.

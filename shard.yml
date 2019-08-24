@@ -11,9 +11,9 @@ dependencies:
   apatite:
     github: watzon/apatite
     branch: master
-  parallel_worker:
-    github: aligo/parallel_worker
+  # parallel_worker:
+  #   github: aligo/parallel_worker
 
-crystal: 0.29.0
+crystal: 0.30.1
 
 license: MIT

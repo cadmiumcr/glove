@@ -1,5 +1,4 @@
 require "apatite"
-require "parallel_worker"
 
 module Cadmium::Glove
   module Workers
@@ -24,7 +23,6 @@ module Cadmium::Glove
 
       def run
         work(indices)
-
         {@word_vec, @word_biases}
       end
 

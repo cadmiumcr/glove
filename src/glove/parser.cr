@@ -1,7 +1,5 @@
 module Cadmium::Glove
   class Parser
-    include Cadmium::Util::StopWords
-
     @text : String
 
     @stem : Bool
@@ -14,7 +12,7 @@ module Cadmium::Glove
 
     @normalize : Bool
 
-    @stop_words : Bool
+    @stop_words : Array(String)
 
     getter tokens : Array(String)
 
@@ -24,7 +22,7 @@ module Cadmium::Glove
       @stem = false,
       @alphabetic = true,
       @normalize = true,
-      @stop_words = true,
+      @stop_words = [] of String,
       @min_length = 3,
       @max_length = 25
     )
@@ -35,7 +33,7 @@ module Cadmium::Glove
       downcase
       alphabetic if @alphabetic
       split
-      stop_words if @stop_words
+      stop_words unless @stop_words.empty?
       normalize if @normalize
       stem if @stem
       tokens
@@ -50,7 +48,7 @@ module Cadmium::Glove
     end
 
     def alphabetic
-      @text = @text.gsub(/([^[:alpha:]]+)|((?=\w*[a-z])(?=\w*[0-9])\w+)/, " ")
+      @text = @text.gsub(/([^\p{L}]+)|((?=\w*[a-z])(?=\w*[0-9])\w+)/, " ")
     end
 
     def stem
@@ -59,13 +57,13 @@ module Cadmium::Glove
 
     def normalize
       @tokens.select! do |word|
-        (@min_length..@max_length).includes?(word.size)
+        word.size >= @min_length && word.size <= @max_length
       end
     end
 
     def stop_words
       @tokens.reject! do |word|
-        @@stop_words.includes?(word)
+        @stop_words.includes?(word)
       end
     end
   end
