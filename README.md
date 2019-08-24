@@ -30,7 +30,7 @@ GloVe is an unsupervised learning algorithm for obtaining vector representations
      cadmium:
        github: cadmiumcr/cadmium
      cadmium_glove:
-       github: cadmium_cr/cadmium_glove
+       github: cadmium_cr/glove
    ```
 
 2. Run `shards install`
