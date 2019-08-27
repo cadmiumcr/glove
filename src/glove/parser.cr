@@ -52,7 +52,8 @@ module Cadmium::Glove
     end
 
     def stem
-      @tokens.map!(&.stem)
+      # @tokens.map!(&.stem)
+      @tokens
     end
 
     def normalize

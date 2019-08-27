@@ -34,7 +34,7 @@ module Cadmium::Glove
 
     # Creates a new `Glove::Model` instance.
     def initialize(
-      @num_components = 50,           # Word vector size
+      @num_components = 30,           # Word vector size
       @epochs = 25,                   # Number of full passes through cooccurrence matrix
       @threads = 4,                   # Number of threads to train on
       @learning_rate = 0.05,          # Initial learning rate
@@ -84,8 +84,8 @@ module Cadmium::Glove
       bias_file = BIAS_FILE
     )
       corpus_dump = corpus.to_json
-      cooc_dump = cooc_matrix.to_json
-      word_vec_dump = word_vec.to_json
+      cooc_dump = cooc_matrix.to_a.to_json
+      word_vec_dump = word_vec.to_a.to_json
       word_bias_dump = word_biases.to_json
 
       Dir.mkdir_p(outdir)
@@ -185,7 +185,8 @@ module Cadmium::Glove
     # Create initial values for @word_vec and @word_biases
     private def build_word_vectors
       cols = @token_index.size
-      @word_vec = Apatite::Matrix.build(cols, @num_components) { rand(0.0...1.0) }
+      random = Random.new(0)
+      @word_vec = Apatite::Matrix.build(cols, @num_components) { random.rand(0.0...1.0) }
       @word_biases = Array(Float64).new(cols, 0)
     end
 

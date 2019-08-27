@@ -4,7 +4,7 @@ module Cadmium::Glove
     module Workers
       class CooccurrenceWorker
 
-        @caller : Cadmium::Glove::Model
+        private getter caller : Cadmium::Glove::Model
 
         getter token_index : Hash(String, Int32)
 
@@ -33,11 +33,11 @@ module Cadmium::Glove
         # entire vocabulary
         def build_cooc_matrix_col(slice)
           token = slice[0]
-          vector = Array(Float64).new(token_index.size, 0)
+          vector = Array(Float64).new(token_index.size, 0.0)
 
           token_pairs.each do |pair|
             key = token_index[pair.token]
-            sum = pair.neighbors.select{ |word| word == token }.size
+            sum = pair.neighbors.select { |word| word == token }.size
             vector[key] += sum
           end
 

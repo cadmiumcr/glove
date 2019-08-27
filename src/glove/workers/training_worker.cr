@@ -22,7 +22,11 @@ module Cadmium::Glove
       end
 
       def run
-        work(indices)
+        slice_size = indices.size / threads
+        indices.each_slice(slice_size) do |slice|
+          work(slice)
+        end
+
         {@word_vec, @word_biases}
       end
 
@@ -50,21 +54,21 @@ module Cadmium::Glove
         prediction = prediction + word_biases[w1] + word_biases[w2]
         word_a_norm = Math.sqrt(word_a_norm)
         word_b_norm = Math.sqrt(word_b_norm)
-        entry_weight = [1.0, (count / max_count)].min ** alpha
+        entry_weight = [1.0, (count/max_count)].min ** alpha
         loss = entry_weight * (prediction - Math.log(count))
 
         {loss, word_a_norm, word_b_norm}
       end
 
       def apply_weights(w1, w2, loss, word_a_norm, word_b_norm)
-        col_vecs = word_vec.column_vectors.map do |col|
+        col_vecs = word_vec.column_vectors.to_a.map do |col|
           col = col.to_a
           col[w1] = (col[w1] - learning_rate * loss * col[w2]) / word_a_norm
           col[w2] = (col[w2] - learning_rate * loss * col[w2]) / word_b_norm
           col
         end
 
-        word_vec = Apatite::Matrix.columns(col_vecs)
+        @word_vec = Apatite::Matrix.columns(col_vecs)
 
         word_biases[w1] -= learning_rate * loss
         word_biases[w2] -= learning_rate * loss

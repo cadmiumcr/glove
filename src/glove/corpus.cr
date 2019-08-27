@@ -4,11 +4,11 @@ module Cadmium::Glove
   class Corpus
     include JSON::Serializable
 
-    @count : Hash(String, Int32)?
+    getter count : Hash(String, Int32)?
 
-    @index : Hash(String, Int32)?
+    getter index : Hash(String, Int32)?
 
-    @pairs : Array(TokenPair)?
+    getter pairs : Array(TokenPair)?
 
     property tokens : Array(String)
 
