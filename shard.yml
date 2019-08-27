@@ -7,6 +7,8 @@ authors:
 dependencies:
   cadmium_util:
     github: cadmiumcr/utilities
+  cadmium_stemmer:
+    github: cadmiumcr/stemmer
   apatite:
     github: watzon/apatite
     branch: master

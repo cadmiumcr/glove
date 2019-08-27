@@ -1,4 +1,3 @@
-require "cadmium"
 require "apatite"
 
 require "./glove/version"

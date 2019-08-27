@@ -50,7 +50,7 @@ Spectator.describe Glove::Corpus do
       last_pair = corpus.pairs.last
 
       expect(first_pair.neighbors).to eq %w(quick brown fox)
-      expect(last_pair.neighbors).to eq %w(fox jumped over lazy dog)
+      expect(last_pair.neighbors).to eq %w(fox jump over lazi dog)
     end
   end
 
@@ -58,7 +58,7 @@ Spectator.describe Glove::Corpus do
     let(:corpus) { described_class.build(text, stop_words: [] of String, min_count: 1) }
 
     it "returns window number of neighbors on each side" do
-      neighbors = corpus.token_neighbors("jumped", 4)
+      neighbors = corpus.token_neighbors("jump", 4)
       expect(neighbors).to eq %w(brown fox over the)
     end
   end
