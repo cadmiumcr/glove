@@ -162,6 +162,28 @@ module Cadmium::Glove
       vector_distance(word).first(num)
     end
 
+    # Find the vector row of @word_vec for a given word.
+    def vector(word)
+      return nil unless word_index = token_index[word]?
+      word_vec.row(word_index)
+    end
+
+    # Calculates the cosine distance of all the words in the vocabulary
+    # against a given word. Results are then sorted in DESC order.
+    def vector_distance(word : String | Apatite::Vector)
+      word_vector = case word
+      when String
+        vector(word)
+      when Apatite::Vector
+        word
+      end
+
+      token_index.map_with_index do |(token, count), idx|
+        next if word.is_a?(String) && token == word
+        {token, cosine(word_vector, word_vec.row(idx))}
+      end.compact.sort { |a, b| b[1] <=> a[1] }
+    end
+
     # Perform train iterations
     private def train_in_epochs(indices)
       1.upto(@epochs) do |epoch|
@@ -206,23 +228,6 @@ module Cadmium::Glove
         end
       end
       entries
-    end
-
-    # Find the vector row of @word_vec for a given word.
-    private def vector(word)
-      return nil unless word_index = token_index[word]?
-      word_vec.row(word_index)
-    end
-
-    # Calculates the cosine distance of all the words in the vocabulary
-    # against a given word. Results are then sorted in DESC order.
-    def vector_distance(word)
-      return [] of Tuple(String, Float64) unless word_vector = vector(word)
-
-      token_index.map_with_index do |(token, count), idx|
-        next if token == word
-        {token, cosine(word_vector, word_vec.row(idx))}
-      end.compact.sort { |a, b| b[1] <=> a[1] }
     end
 
     private def cosine(vector1, vector2)

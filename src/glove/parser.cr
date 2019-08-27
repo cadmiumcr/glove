@@ -19,7 +19,7 @@ module Cadmium::Glove
     def initialize(
       @text : String,
       *,
-      @stem = false,
+      @stem = true,
       @alphabetic = true,
       @normalize = true,
       @stop_words = [] of String,
